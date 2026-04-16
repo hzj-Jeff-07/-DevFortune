@@ -11,8 +11,8 @@
 <p align="center">
   <a href="https://www.npmjs.com/package/devfortune"><img src="https://img.shields.io/npm/v/devfortune?style=flat-square" alt="npm version" /></a>
   <a href="https://marketplace.visualstudio.com/items?itemName=devfortune.devfortune"><img src="https://img.shields.io/visual-studio-marketplace/v/devfortune.devfortune?style=flat-square" alt="VS Code version" /></a>
-  <a href="https://github.com/your-username/devfortune/blob/main/LICENSE"><img src="https://img.shields.io/github/license/your-username/devfortune?style=flat-square" alt="License" /></a>
-  <a href="https://github.com/your-username/devfortune/stargazers"><img src="https://img.shields.io/github/stars/your-username/devfortune?style=flat-square" alt="Stars" /></a>
+  <a href="https://github.com/hzj-Jeff-07/-DevFortune/blob/main/LICENSE"><img src="https://img.shields.io/github/license/hzj-Jeff-07/-DevFortune?style=flat-square" alt="License" /></a>
+  <a href="https://github.com/hzj-Jeff-07/-DevFortune/stargazers"><img src="https://img.shields.io/github/stars/hzj-Jeff-07/-DevFortune?style=flat-square" alt="Stars" /></a>
 </p>
 
 <p align="center">
