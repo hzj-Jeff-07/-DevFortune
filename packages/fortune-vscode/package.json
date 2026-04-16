@@ -1,0 +1,49 @@
+{
+  "name": "devfortune-vscode",
+  "displayName": "DevFortune",
+  "description": "程序员每日运势 - 基于天干地支与五行理论",
+  "version": "0.1.0",
+  "publisher": "devfortune",
+  "engines": { "vscode": "^1.85.0" },
+  "categories": ["Other"],
+  "activationEvents": ["onStartupFinished"],
+  "main": "./dist/extension.js",
+  "contributes": {
+    "commands": [
+      { "command": "devfortune.showFortune", "title": "DevFortune: 查看今日运势" },
+      { "command": "devfortune.refresh", "title": "DevFortune: 刷新运势" }
+    ],
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "devfortune",
+          "title": "DevFortune",
+          "icon": "media/icon.svg"
+        }
+      ]
+    },
+    "views": {
+      "devfortune": [
+        {
+          "type": "webview",
+          "id": "devfortune.sidebar",
+          "name": "今日运势"
+        }
+      ]
+    }
+  },
+  "scripts": {
+    "build": "esbuild src/extension.ts --bundle --outfile=dist/extension.js --external:vscode --format=cjs --platform=node",
+    "watch": "pnpm build --watch",
+    "typecheck": "tsc --noEmit",
+    "package": "vsce package --no-dependencies"
+  },
+  "dependencies": {
+    "@devfortune/core": "workspace:*"
+  },
+  "devDependencies": {
+    "@types/vscode": "^1.85.0",
+    "esbuild": "^0.20.0",
+    "typescript": "^5.4.0"
+  }
+}
