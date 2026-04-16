@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import { getGanZhi, getDayPillar, getYearPillar } from '../src/ganzhi/calculator.js';
 import { getTianGanInfo, getDiZhiInfo, getNayin, getJiaZiIndex, getHiddenStems } from '../src/ganzhi/data.js';
-import { TianGan, DiZhi, WuXing } from '../src/types.js';
+import { WuXing } from '../src/types.js';
 
 describe('ganzhi/data', () => {
   it('getTianGanInfo returns correct data', () => {

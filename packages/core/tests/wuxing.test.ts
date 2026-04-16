@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { analyzeWuXing, getRelation, calculateDistribution, evaluateStrength, getLuckyElement } from '../src/wuxing/analyzer.js';
+import { analyzeWuXing, getRelation, calculateDistribution, evaluateStrength } from '../src/wuxing/analyzer.js';
 import { getGanZhi } from '../src/ganzhi/calculator.js';
 import { WuXing, WuXingRelation, WuXingStrength } from '../src/types.js';
 

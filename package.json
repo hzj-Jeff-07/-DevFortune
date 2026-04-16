@@ -7,7 +7,7 @@
   "scripts": {
     "build": "turbo run build",
     "test": "turbo run test",
-    "lint": "eslint packages/*/src/",
+    "lint": "eslint .",
     "typecheck": "turbo run typecheck",
     "format": "prettier --write \"**/*.{ts,tsx,json,md}\""
   },
