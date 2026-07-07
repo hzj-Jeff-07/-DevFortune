@@ -24,6 +24,11 @@ export default function Home() {
     setDateStr(toDateStr(new Date()));
   }, []);
 
+  // <html lang> 跟随界面语言（对屏幕阅读器和翻译插件重要）
+  useEffect(() => {
+    document.documentElement.lang = locale;
+  }, [locale]);
+
   const todayStr = useMemo(() => toDateStr(new Date()), []);
 
   const fortune = useMemo(() => {

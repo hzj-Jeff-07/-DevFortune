@@ -1,12 +1,20 @@
 import type { Fortune } from '@devfortune/core';
 import { getLabels } from './labels.js';
 import type { CliLocale } from './labels.js';
+import { displayWidth } from './width.js';
+
+/** --detail 附加的五行分析数据（由 CLI 入口从 core 计算后传入） */
+export interface WuXingDetail {
+  distribution: Record<string, number>;
+  strength: Record<string, number>;
+  missing: string[];
+}
 
 interface TextOptions {
-  detail?: boolean;
   noColor?: boolean;
   raw?: boolean;
   locale?: CliLocale;
+  detail?: WuXingDetail;
 }
 
 // ANSI color codes
@@ -44,6 +52,57 @@ function scoreColor(score: number, c: typeof C): string {
   return c.red;
 }
 
+const ELEMENT_ORDER = ['wood', 'fire', 'earth', 'metal', 'water'];
+
+/** 按终端显示宽度折行：英文按词、CJK 按字符 */
+function wrapToWidth(text: string, maxWidth: number): string[] {
+  const lines: string[] = [];
+  let current = '';
+  for (const word of text.split(/(\s+)/)) {
+    if (displayWidth(current + word) <= maxWidth) {
+      current += word;
+      continue;
+    }
+    if (current.trim()) lines.push(current.trimEnd());
+    if (displayWidth(word) <= maxWidth) {
+      current = word.trimStart();
+      continue;
+    }
+    current = '';
+    for (const ch of word) {
+      if (displayWidth(current + ch) > maxWidth && current) {
+        lines.push(current);
+        current = '';
+      }
+      current += ch;
+    }
+  }
+  if (current.trim()) lines.push(current.trimEnd());
+  return lines.length > 0 ? lines : [''];
+}
+
+function formatDetailLines(
+  detail: WuXingDetail,
+  L: ReturnType<typeof getLabels>
+): string[] {
+  const dist = ELEMENT_ORDER.map(
+    e => `${L.elements[e]} ${Number((detail.distribution[e] ?? 0).toFixed(1))}`
+  ).join(' · ');
+  const strength = ELEMENT_ORDER.map(
+    e => `${L.elements[e]} ${L.strengthNames[detail.strength[e]] ?? detail.strength[e]}`
+  ).join(' · ');
+  const missing =
+    detail.missing.length > 0
+      ? detail.missing.map(e => L.elements[e] ?? e).join(' · ')
+      : L.none;
+
+  return [
+    `${L.distribution}${L.colon}${dist}`,
+    `${L.strengthLabel}${L.colon}${strength}`,
+    `${L.missing}${L.colon}${missing}`,
+  ];
+}
+
 export function formatText(fortune: Fortune, opts: TextOptions = {}): string {
   const c = nc(opts.noColor ?? false);
   const raw = opts.raw ?? false;
@@ -59,6 +118,7 @@ export function formatText(fortune: Fortune, opts: TextOptions = {}): string {
 
   const yi = fortune.fortune.yi.join(' | ');
   const ji = fortune.fortune.ji.join(' | ');
+  const detailLines = opts.detail ? formatDetailLines(opts.detail, L) : [];
 
   if (raw) {
     const lines = [
@@ -75,6 +135,7 @@ export function formatText(fortune: Fortune, opts: TextOptions = {}): string {
       `${L.luckyLang}${L.colon}${fortune.fortune.luckyLang}`,
       `${L.luckyTool}${L.colon}${fortune.fortune.luckyTool}`,
     ];
+    if (detailLines.length > 0) lines.push(``, `${L.detailTitle}${L.colon}`, ...detailLines);
     if (fortune.fortune.tip) lines.push(``, `💡 ${fortune.fortune.tip}`);
     return lines.join('\n');
   }
@@ -83,57 +144,65 @@ export function formatText(fortune: Fortune, opts: TextOptions = {}): string {
   const width = 50;
   const hr = '─'.repeat(width);
   const lines: string[] = [];
+
+  /** 一行带边框的内容，按终端显示宽度补齐右边框 */
+  const rawRow = (content: string, color = '') => {
+    const pad = ' '.repeat(Math.max(0, width - displayWidth(content) - 1));
+    const reset = color ? c.reset : '';
+    return `${c.dim}│${c.reset} ${color}${content}${reset}${pad}${c.dim}│${c.reset}`;
+  };
+  /** 超宽内容自动折行后逐行输出 */
+  const row = (content: string, color = '') => {
+    for (const line of wrapToWidth(content, width - 2)) {
+      lines.push(rawRow(line, color));
+    }
+  };
+  const blank = () => lines.push(`${c.dim}│${c.reset}${' '.repeat(width)}${c.dim}│${c.reset}`);
+  const divider = () => lines.push(`${c.dim}├${hr}┤${c.reset}`);
+
   lines.push(`${c.dim}╭${hr}╮${c.reset}`);
-  lines.push(`${c.dim}│${c.reset} ${c.bold}${dateStr}${c.reset}${' '.repeat(Math.max(0, width - dateStr.length - 1))}${c.dim}│${c.reset}`);
-  lines.push(`${c.dim}│${c.reset} ${c.cyan}${ganzhi}${c.reset}${' '.repeat(Math.max(0, width - ganzhi.length - 1))}${c.dim}│${c.reset}`);
-  lines.push(`${c.dim}│${c.reset}${' '.repeat(width)}${c.dim}│${c.reset}`);
+  row(dateStr, c.bold);
+  row(ganzhi, c.cyan);
+  blank();
 
-  const wuxingLine = `${L.wuxing}${L.colon}${dominant}  ${L.luckyElement}${L.colon}${lucky}`;
-  lines.push(`${c.dim}│${c.reset} ${c.magenta}${wuxingLine}${c.reset}${' '.repeat(Math.max(0, width - wuxingLine.length - 1))}${c.dim}│${c.reset}`);
+  row(`${L.wuxing}${L.colon}${dominant}  ${L.luckyElement}${L.colon}${lucky}`, c.magenta);
+  row(`${stars}  ${level}  (${fortune.fortune.score}/100)`, sColor);
 
-  const starLine = `${stars}  ${level}  (${fortune.fortune.score}/100)`;
-  lines.push(`${c.dim}│${c.reset} ${sColor}${starLine}${c.reset}${' '.repeat(Math.max(0, width - starLine.length - 1))}${c.dim}│${c.reset}`);
+  blank();
+  divider();
 
-  lines.push(`${c.dim}│${c.reset}${' '.repeat(width)}${c.dim}│${c.reset}`);
-  lines.push(`${c.dim}├${hr}┤${c.reset}`);
+  row(fortune.fortune.overview, c.bold);
+  blank();
 
-  // Overview
-  const overview = fortune.fortune.overview;
-  lines.push(`${c.dim}│${c.reset} ${c.bold}${overview}${c.reset}${' '.repeat(Math.max(0, width - overview.length - 1))}${c.dim}│${c.reset}`);
-
-  lines.push(`${c.dim}│${c.reset}${' '.repeat(width)}${c.dim}│${c.reset}`);
-
-  // Yi
-  const yiHeader = `${L.yi}${L.colon}`;
-  lines.push(`${c.dim}│${c.reset} ${c.green}${yiHeader}${c.reset}${' '.repeat(Math.max(0, width - yiHeader.length - 1))}${c.dim}│${c.reset}`);
+  row(`${L.yi}${L.colon}`, c.green);
   for (const item of fortune.fortune.yi) {
-    const itemLine = `  · ${item}`;
-    lines.push(`${c.dim}│${c.reset} ${c.green}${itemLine}${c.reset}${' '.repeat(Math.max(0, width - itemLine.length - 1))}${c.dim}│${c.reset}`);
+    row(`  · ${item}`, c.green);
   }
 
-  lines.push(`${c.dim}│${c.reset}${' '.repeat(width)}${c.dim}│${c.reset}`);
+  blank();
 
-  // Ji
-  const jiHeader = `${L.ji}${L.colon}`;
-  lines.push(`${c.dim}│${c.reset} ${c.red}${jiHeader}${c.reset}${' '.repeat(Math.max(0, width - jiHeader.length - 1))}${c.dim}│${c.reset}`);
+  row(`${L.ji}${L.colon}`, c.red);
   for (const item of fortune.fortune.ji) {
-    const itemLine = `  · ${item}`;
-    lines.push(`${c.dim}│${c.reset} ${c.red}${itemLine}${c.reset}${' '.repeat(Math.max(0, width - itemLine.length - 1))}${c.dim}│${c.reset}`);
+    row(`  · ${item}`, c.red);
   }
 
-  lines.push(`${c.dim}│${c.reset}${' '.repeat(width)}${c.dim}│${c.reset}`);
-  lines.push(`${c.dim}├${hr}┤${c.reset}`);
+  blank();
+  divider();
 
-  // Lucky
-  const langLine = `${L.luckyLang}${L.colon}${fortune.fortune.luckyLang}`;
-  const toolLine = `${L.luckyTool}${L.colon}${fortune.fortune.luckyTool}`;
-  lines.push(`${c.dim}│${c.reset} ${c.yellow}${langLine}${c.reset}${' '.repeat(Math.max(0, width - langLine.length - 1))}${c.dim}│${c.reset}`);
-  lines.push(`${c.dim}│${c.reset} ${c.yellow}${toolLine}${c.reset}${' '.repeat(Math.max(0, width - toolLine.length - 1))}${c.dim}│${c.reset}`);
+  row(`${L.luckyLang}${L.colon}${fortune.fortune.luckyLang}`, c.yellow);
+  row(`${L.luckyTool}${L.colon}${fortune.fortune.luckyTool}`, c.yellow);
+
+  if (detailLines.length > 0) {
+    blank();
+    row(`${L.detailTitle}${L.colon}`, c.cyan);
+    for (const line of detailLines) {
+      row(`  ${line}`, c.dim);
+    }
+  }
 
   if (fortune.fortune.tip) {
-    lines.push(`${c.dim}│${c.reset}${' '.repeat(width)}${c.dim}│${c.reset}`);
-    const tipLine = `💡 ${fortune.fortune.tip}`;
-    lines.push(`${c.dim}│${c.reset} ${tipLine}${' '.repeat(Math.max(0, width - tipLine.length - 1))}${c.dim}│${c.reset}`);
+    blank();
+    row(`💡 ${fortune.fortune.tip}`);
   }
 
   lines.push(`${c.dim}╰${hr}╯${c.reset}`);

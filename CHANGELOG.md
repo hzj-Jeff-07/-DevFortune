@@ -26,6 +26,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### 修复 / Fixed
 
+- **CLI 边框对齐**：按终端显示宽度（CJK/全角/emoji 记 2 列）计算填充，修复中文行右边框错位；超宽内容自动折行 / CLI bordered output now pads by terminal display width (CJK counts as 2 columns), fixing misaligned right borders; overlong lines wrap
+- **CLI 颜色惯例**：遵循 `NO_COLOR` 环境变量，stdout 非 TTY（管道/重定向）时自动禁用彩色，`--brief` 接 shell 不再混入 ANSI 码 / CLI respects `NO_COLOR` and disables colors when stdout is not a TTY
+- **Web `<html lang>`**：跟随界面语言切换（辅助功能/翻译插件）/ Web `<html lang>` now follows the active locale
+- **CLI `--detail` 生效**：此前该选项被解析但无任何输出，现在 text 模式附加五行分布/强度/缺失分析，JSON 模式附加 `detail` 字段 / The previously parsed-but-ignored `--detail` flag now works: element distribution/strength/missing analysis in text mode, a `detail` field in JSON mode
+
 - **节气精确计算**：立春与月柱分界节气改用太阳视黄经天文算法（按东八区取日），替代固定日期近似表，修复约三分之一年份在节气边界前后 1-2 天年柱/月柱推算错误的问题 / Solar terms (LiChun and monthly boundaries) are now computed astronomically from apparent solar longitude (dated in UTC+8) instead of fixed-date approximations, fixing year/month pillar errors near term boundaries
 - **Web 运势时效**：首页改为在浏览器端按访问者本地日期计算运势，修复服务端渲染导致的运势过期与时区错位 / The web homepage now computes the fortune client-side from the visitor's local date, fixing stale fortunes and server-timezone skew
 - **VS Code 扩展跨天刷新**：编辑器常驻多日时，状态栏与侧边栏在日期变更后自动刷新 / The status bar and sidebar now refresh automatically when the day rolls over

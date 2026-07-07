@@ -17,8 +17,15 @@ export interface LabelSet {
   mdGanzhi: string;
   mdWuxing: string;
   mdFortune: string;
+  detailTitle: string;
+  distribution: string;
+  strengthLabel: string;
+  missing: string;
+  none: string;
   elements: Record<string, string>;
   levels: Record<string, string>;
+  /** 五行强度 1-5 级的名称 */
+  strengthNames: Record<number, string>;
   ganzhiLine: (ganzhi: Fortune['ganzhi']) => string;
 }
 
@@ -36,8 +43,14 @@ const ZH: LabelSet = {
   mdGanzhi: '干支',
   mdWuxing: '五行',
   mdFortune: '运势',
+  detailTitle: '五行分析',
+  distribution: '分布',
+  strengthLabel: '强度',
+  missing: '缺',
+  none: '无',
   elements: { wood: '木', fire: '火', earth: '土', metal: '金', water: '水' },
   levels: { great: '大吉', good: '吉', neutral: '平', bad: '凶', terrible: '大凶' },
+  strengthNames: { 1: '极弱', 2: '弱', 3: '平衡', 4: '旺', 5: '极旺' },
   ganzhiLine: g => `${g.year}年 ${g.month}月 ${g.day}日${g.hour ? ` ${g.hour}时` : ''}`,
 };
 
@@ -55,8 +68,14 @@ const EN: LabelSet = {
   mdGanzhi: 'GanZhi',
   mdWuxing: 'Element',
   mdFortune: 'Fortune',
+  detailTitle: 'Element analysis',
+  distribution: 'Distribution',
+  strengthLabel: 'Strength',
+  missing: 'Missing',
+  none: 'none',
   elements: { wood: 'Wood', fire: 'Fire', earth: 'Earth', metal: 'Metal', water: 'Water' },
   levels: { great: 'Excellent', good: 'Good', neutral: 'Neutral', bad: 'Rough', terrible: 'Dreadful' },
+  strengthNames: { 1: 'Very weak', 2: 'Weak', 3: 'Balanced', 4: 'Strong', 5: 'Very strong' },
   ganzhiLine: g =>
     `Year ${g.year} · Month ${g.month} · Day ${g.day}${g.hour ? ` · Hour ${g.hour}` : ''}`,
 };
