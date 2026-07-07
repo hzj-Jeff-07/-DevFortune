@@ -10,6 +10,27 @@
   "activationEvents": ["onStartupFinished"],
   "main": "./dist/extension.js",
   "contributes": {
+    "configuration": {
+      "title": "DevFortune",
+      "properties": {
+        "devfortune.language": {
+          "type": "string",
+          "enum": ["auto", "zh-CN", "en-US"],
+          "default": "auto",
+          "description": "运势语言 / Fortune language ('auto' follows the VS Code display language)"
+        },
+        "devfortune.showStatusBar": {
+          "type": "boolean",
+          "default": true,
+          "description": "在状态栏显示今日运势 / Show today's fortune in the status bar"
+        },
+        "devfortune.dailyNotification": {
+          "type": "boolean",
+          "default": false,
+          "description": "每天首次打开 VS Code 时弹出运势通知 / Show a fortune notification once per day"
+        }
+      }
+    },
     "commands": [
       { "command": "devfortune.showFortune", "title": "DevFortune: 查看今日运势" },
       { "command": "devfortune.refresh", "title": "DevFortune: 刷新运势" }
@@ -36,6 +57,7 @@
   "scripts": {
     "build": "esbuild src/extension.ts --bundle --outfile=dist/extension.js --external:vscode --format=cjs --platform=node",
     "watch": "pnpm build --watch",
+    "test": "vitest run",
     "typecheck": "tsc --noEmit",
     "package": "vsce package --no-dependencies"
   },
@@ -45,6 +67,7 @@
   "devDependencies": {
     "@types/vscode": "^1.85.0",
     "esbuild": "^0.20.0",
-    "typescript": "^5.4.0"
+    "typescript": "^5.4.0",
+    "vitest": "^1.6.0"
   }
 }
