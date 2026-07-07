@@ -1,5 +1,5 @@
 {
-  "name": "devfortune",
+  "name": "devfortune-monorepo",
   "version": "0.1.0",
   "private": true,
   "type": "module",
@@ -9,9 +9,13 @@
     "test": "turbo run test",
     "lint": "eslint .",
     "typecheck": "turbo run typecheck",
-    "format": "prettier --write \"**/*.{ts,tsx,json,md}\""
+    "format": "prettier --write \"**/*.{ts,tsx,json,md}\"",
+    "changeset": "changeset",
+    "version-packages": "changeset version",
+    "release": "turbo run build --filter='!@devfortune/web' && changeset publish"
   },
   "devDependencies": {
+    "@changesets/cli": "^2.31.0",
     "@eslint/js": "^10.0.1",
     "eslint": "^10.2.0",
     "globals": "^17.5.0",

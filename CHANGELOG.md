@@ -12,6 +12,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+### 新增 / Added
+
+- **时柱推算**：五鼠遁法推算时柱，23 时后按次日子时取时干（子正换日惯例）；`getHourPillar(date)` 或 `getGanZhi(date, { includeHour: true })` / Hour pillar calculation via the Five-Rats method (`getHourPillar`, opt-in via `getGanZhi(date, { includeHour: true })`); hours from 23:00 use the next day's stem
+- **节气 API**：导出 `getJieDay(year, month)` 与 `getLiChunDay(year)` / Exported `getJieDay` and `getLiChunDay`
+- **发布流水线**：接入 changesets，合入 main 后自动创建版本 PR 并发布 npm 包 / Added a changesets-based release pipeline (version PR + npm publish on merge)
+
 ### 修复 / Fixed
 
 - **节气精确计算**：立春与月柱分界节气改用太阳视黄经天文算法（按东八区取日），替代固定日期近似表，修复约三分之一年份在节气边界前后 1-2 天年柱/月柱推算错误的问题 / Solar terms (LiChun and monthly boundaries) are now computed astronomically from apparent solar longitude (dated in UTC+8) instead of fixed-date approximations, fixing year/month pillar errors near term boundaries

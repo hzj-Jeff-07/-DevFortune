@@ -1,0 +1,48 @@
+# 发布流水线（changesets）
+#
+# 工作方式：
+# 1. 功能/修复 PR 附带 `pnpm changeset` 生成的变更说明
+# 2. 合入 main 后，本工作流自动创建/更新 "Version Packages" PR（提升版本号、更新 CHANGELOG）
+# 3. 合并 Version Packages PR 后，自动构建并发布 @devfortune/core 与 devfortune 到 npm
+#
+# 前置条件：仓库 Settings → Secrets 配置 NPM_TOKEN（npm automation token）。
+# VS Code 扩展（devfortune-vscode）为 private，不走 npm，发布用 `pnpm --filter devfortune-vscode package` + vsce。
+
+name: Release
+
+on:
+  push:
+    branches: [main]
+
+concurrency: ${{ github.workflow }}-${{ github.ref }}
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+
+      - name: Create release PR or publish to npm
+        uses: changesets/action@v1
+        with:
+          publish: pnpm release
+          version: pnpm version-packages
+          commit: 'chore: version packages'
+          title: 'chore: version packages'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}

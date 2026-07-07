@@ -3,6 +3,7 @@
   "displayName": "DevFortune",
   "description": "程序员每日运势 - 基于天干地支与五行理论",
   "version": "0.1.0",
+  "private": true,
   "publisher": "devfortune",
   "engines": { "vscode": "^1.85.0" },
   "categories": ["Other"],

@@ -109,8 +109,40 @@ export function getMonthPillar(date: Date, yearPillar: GanZhiPillar): GanZhiPill
   return buildPillar(tianGanIndex, diZhiIndex, jiaziIndex);
 }
 
-/** 获取完整四柱干支 */
-export function getGanZhi(date: Date): GanZhiResult {
+/** 时柱五鼠遁：根据日干确定子时天干 */
+function getHourTianGanBase(dayTianGanIndex: number): number {
+  // 甲己还加甲(0)、乙庚丙作初(2)、丙辛从戊起(4)、丁壬庚子居(6)、戊癸起壬子(8)
+  return (dayTianGanIndex % 5) * 2;
+}
+
+/**
+ * 计算时柱。
+ *
+ * 时支按两小时一辰划分（23:00-00:59 为子时）。
+ * 23 时之后属次日子时，时干按次日日干推算（子正换日惯例）。
+ */
+export function getHourPillar(date: Date): GanZhiPillar {
+  const hour = date.getHours();
+  const diZhiIndex = Math.floor((hour + 1) / 2) % 12;
+
+  const dayForStem = hour >= 23 ? new Date(date.getTime() + MS_PER_DAY) : date;
+  const dayPillar = getDayPillar(dayForStem);
+
+  const base = getHourTianGanBase(dayPillar.tianGan.index);
+  const tianGanIndex = (base + diZhiIndex) % 10;
+
+  const jiaziIndex = getJiaZiIndex(tianGanIndex, diZhiIndex);
+  return buildPillar(tianGanIndex, diZhiIndex, jiaziIndex);
+}
+
+/** 干支推算选项 */
+export interface GanZhiOptions {
+  /** 是否包含时柱（时柱会参与五行分布统计，影响运势结果），默认不包含 */
+  includeHour?: boolean;
+}
+
+/** 获取完整干支（默认年月日三柱，includeHour 时附加时柱） */
+export function getGanZhi(date: Date, options?: GanZhiOptions): GanZhiResult {
   validateDate(date);
 
   const yearPillar = getYearPillar(date);
@@ -121,6 +153,7 @@ export function getGanZhi(date: Date): GanZhiResult {
     year: yearPillar,
     month: monthPillar,
     day: dayPillar,
+    ...(options?.includeHour ? { hour: getHourPillar(date) } : {}),
     solarDate: date,
   };
 }

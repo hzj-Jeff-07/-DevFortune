@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { getGanZhi, getDayPillar, getYearPillar } from '../src/ganzhi/calculator.js';
+import { getGanZhi, getDayPillar, getYearPillar, getHourPillar } from '../src/ganzhi/calculator.js';
 import { getJieDay, getLiChunDay } from '../src/ganzhi/jieqi.js';
 import { getTianGanInfo, getDiZhiInfo, getNayin, getJiaZiIndex, getHiddenStems } from '../src/ganzhi/data.js';
 import { WuXing } from '../src/types.js';
@@ -93,6 +93,39 @@ describe('ganzhi/calculator', () => {
     expect(r1.day.display).toBe(r2.day.display);
     expect(r1.year.display).toBe(r2.year.display);
     expect(r1.month.display).toBe(r2.month.display);
+  });
+});
+
+describe('ganzhi/hourPillar', () => {
+  it('甲日子时为甲子时（甲己还加甲）', () => {
+    // 2000-01-07 为甲子日
+    const pillar = getHourPillar(new Date(2000, 0, 7, 0, 30));
+    expect(pillar.display).toBe('甲子');
+  });
+
+  it('甲日午时为庚午时', () => {
+    const pillar = getHourPillar(new Date(2000, 0, 7, 12, 0));
+    expect(pillar.display).toBe('庚午');
+  });
+
+  it('丙日巳时为癸巳时（丙辛从戊起）', () => {
+    // 2000-01-09 为丙寅日
+    expect(getDayPillar(new Date(2000, 0, 9)).display).toBe('丙寅');
+    const pillar = getHourPillar(new Date(2000, 0, 9, 9, 30));
+    expect(pillar.display).toBe('癸巳');
+  });
+
+  it('23 时属次日子时，时干按次日日干推算', () => {
+    // 2000-01-07 甲子日 23:30 → 次日乙丑日的子时 → 丙子（乙庚丙作初）
+    const pillar = getHourPillar(new Date(2000, 0, 7, 23, 30));
+    expect(pillar.display).toBe('丙子');
+  });
+
+  it('getGanZhi 默认不含时柱，includeHour 时附加', () => {
+    const d = new Date(2000, 0, 7, 12, 0);
+    expect(getGanZhi(d).hour).toBeUndefined();
+    const withHour = getGanZhi(d, { includeHour: true });
+    expect(withHour.hour?.display).toBe('庚午');
   });
 });
 
