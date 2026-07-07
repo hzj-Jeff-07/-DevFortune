@@ -92,6 +92,18 @@ command -v devfortune >/dev/null 2>&1 && devfortune --brief
 code --install-extension devfortune.devfortune
 ```
 
+### JSON API
+
+Web 应用内置开放接口（部署后即可用）：
+
+```bash
+# 指定日期的运势（可长缓存）
+curl 'https://devfortune.dev/api/fortune?date=2026-07-07&locale=zh-CN'
+
+# 附加时柱 / 英文
+curl 'https://devfortune.dev/api/fortune?date=2026-07-07&time=14:30&locale=en-US'
+```
+
 ## ✨ 功能特性
 
 ### 核心能力
@@ -198,26 +210,26 @@ DevFortune/
 
 ## 🗺️ 路线图
 
-### v0.1.0 — MVP（进行中）
+### v0.1.0 — MVP（已完成）
 
-- [ ] 核心引擎：天干地支推算 + 五行分析
-- [ ] 核心引擎：运势生成算法
-- [ ] CLI 工具：基础功能
-- [ ] Web 应用：每日运势页面
+- [x] 核心引擎：天干地支推算 + 五行分析（节气天文精确计算）
+- [x] 核心引擎：运势生成算法
+- [x] CLI 工具：基础功能 + 时柱 + 详细分析
+- [x] Web 应用：每日运势页面
 
-### v0.2.0 — 扩展
+### v0.2.0 — 扩展（已完成）
 
-- [ ] VS Code 扩展：状态栏 + 侧边栏
-- [ ] Web 应用：运势分享卡片
-- [ ] CLI：Shell 集成指南
-- [ ] 多语言支持（English）
+- [x] VS Code 扩展：状态栏 + 侧边栏 + 设置 + 每日通知
+- [x] Web 应用：运势分享卡片 + 任意日期回顾
+- [x] CLI：Shell 集成指南
+- [x] 多语言支持（English，三端全覆盖）
 
 ### v0.3.0 — 社区
 
 - [ ] 运势模板社区贡献系统
 - [ ] 个人八字定制运势（Pro）
 - [ ] 团队运势（适合站会）
-- [ ] API 开放接口
+- [x] API 开放接口（`GET /api/fortune?date=&time=&locale=`）
 
 ### v1.0.0 — 成熟
 

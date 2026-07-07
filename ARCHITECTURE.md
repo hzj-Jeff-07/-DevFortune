@@ -44,53 +44,52 @@ DevFortune/
 │   ├── core/                  # 核心引擎（零依赖）
 │   │   ├── src/
 │   │   │   ├── ganzhi/        # 天干地支计算模块
-│   │   │   │   ├── tiangan.ts     # 十天干定义与计算
-│   │   │   │   ├── dizhi.ts       # 十二地支定义与计算
-│   │   │   │   ├── calendar.ts    # 农历/节气转换
+│   │   │   │   ├── calculator.ts  # 年/月/日/时柱推算
+│   │   │   │   ├── jieqi.ts       # 节气天文计算（太阳视黄经）
+│   │   │   │   ├── data.ts        # 天干/地支/纳音/藏干数据表
 │   │   │   │   └── index.ts
 │   │   │   ├── wuxing/        # 五行分析模块
-│   │   │   │   ├── elements.ts    # 五行定义
-│   │   │   │   ├── relations.ts   # 生克关系
-│   │   │   │   ├── analyzer.ts    # 五行分析器
+│   │   │   │   ├── analyzer.ts    # 生克关系、分布、强度、幸运五行
 │   │   │   │   └── index.ts
 │   │   │   ├── fortune/       # 运势生成模块
-│   │   │   │   ├── pipeline.ts    # 运势生成管线
+│   │   │   │   ├── pipeline.ts    # 运势生成管线（主入口）
 │   │   │   │   ├── scorer.ts      # 评分引擎
 │   │   │   │   ├── yiji.ts        # 宜忌生成器
 │   │   │   │   └── index.ts
-│   │   │   ├── templates/     # 模板引擎
-│   │   │   │   ├── loader.ts      # 模板加载器
-│   │   │   │   ├── renderer.ts    # 模板渲染器
+│   │   │   ├── templates/     # 运势模板与五行映射（zh-CN / en-US）
+│   │   │   │   ├── defaults.ts / defaults.en.ts
+│   │   │   │   ├── mapping.ts / mapping.en.ts
 │   │   │   │   └── index.ts
+│   │   │   ├── types.ts       # 全部类型定义
 │   │   │   └── index.ts       # 统一导出
-│   │   ├── data/
-│   │   │   ├── tiangan.json       # 天干数据
-│   │   │   ├── dizhi.json         # 地支数据
-│   │   │   ├── wuxing-mapping.json # 五行编程映射
-│   │   │   └── templates/         # 运势模板集合
 │   │   ├── tests/
 │   │   └── package.json
-│   ├── fortune-web/           # Web 应用
-│   │   ├── app/               # Next.js App Router
-│   │   │   ├── page.tsx           # 首页
-│   │   │   ├── api/               # API Routes
+│   ├── fortune-web/           # Web 应用（Next.js App Router）
+│   │   ├── src/app/
+│   │   │   ├── page.tsx           # 首页（客户端计算运势）
+│   │   │   ├── api/fortune/       # JSON API 路由
 │   │   │   └── layout.tsx
-│   │   ├── components/
+│   │   ├── src/components/        # FortuneCard、DateNav 等
+│   │   ├── src/lib/               # i18n、分享卡片绘制
 │   │   └── package.json
 │   ├── fortune-cli/           # CLI 工具
 │   │   ├── src/
-│   │   │   ├── commands/          # 命令定义
-│   │   │   ├── output/            # 输出格式化
+│   │   │   ├── commands/          # 参数解析
+│   │   │   ├── output/            # text/markdown/labels/宽度/颜色
 │   │   │   └── index.ts
+│   │   ├── tests/
 │   │   └── package.json
-│   └── fortune-vscode/        # VS Code 插件
+│   └── fortune-vscode/        # VS Code 扩展
 │       ├── src/
-│       │   ├── extension.ts       # 入口
-│       │   ├── providers/         # 视图提供者
-│       │   └── commands/          # 命令注册
+│       │   ├── extension.ts       # 入口（状态栏/命令/通知）
+│       │   ├── sidebar.ts         # 侧边栏视图
+│       │   ├── fortune-service.ts # 运势缓存与语言解析
+│       │   ├── fortune-html.ts    # Webview 渲染（纯函数）
+│       │   └── labels.ts          # UI 标签本地化
+│       ├── tests/
 │       └── package.json
-├── templates/                 # 社区贡献模板
-├── docs/                      # 项目文档
+├── docs/                      # 项目文档（design/adr/api/dev/domain/…）
+├── .changeset/                # changesets 发布配置
 ├── turbo.json                 # Turborepo 配置
 ├── pnpm-workspace.yaml        # pnpm 工作区
 └── package.json               # 根 package.json
