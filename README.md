@@ -51,6 +51,13 @@ npm install -g devfortune
 # 查看今日运势
 devfortune
 
+# 指定日期与时刻（附加时柱）
+devfortune -d 2026-07-07 -t 14:30
+
+# 单行简洁模式 / JSON 输出
+devfortune --brief
+devfortune -f json
+
 # 输出示例：
 # ╭──────────────────────────────────────╮
 # │  📅 2026年4月9日 丙午年 壬辰月 甲子日  │
@@ -63,6 +70,12 @@ devfortune
 # │  💬 今日木气生发，适合开创新项目。        │
 # │     代码如春笋，节节拔高！              │
 # ╰──────────────────────────────────────╯
+```
+
+**Shell 集成**：在 `~/.zshrc` 或 `~/.bashrc` 末尾加入一行，每次打开终端自动显示今日运势：
+
+```bash
+command -v devfortune >/dev/null 2>&1 && devfortune --brief
 ```
 
 ### VS Code 扩展
@@ -95,7 +108,8 @@ code --install-extension devfortune.devfortune
 ### CLI 工具
 
 - 🖥️ 彩色终端输出，赏心悦目
-- 🐚 Shell 集成（规划中，开机自动显示运势）
+- 🐚 Shell 集成（打开终端自动显示运势，见下方配置）
+- 🕐 时柱推算（`--time` 指定时刻，五鼠遁法）
 - 📤 JSON / Markdown 输出模式（便于管道和脚本集成）
 - 🌍 多语言支持（规划中，中文/English）
 

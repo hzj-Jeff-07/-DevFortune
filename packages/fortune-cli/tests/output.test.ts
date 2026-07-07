@@ -40,6 +40,22 @@ describe('formatText', () => {
   });
 });
 
+describe('hour pillar rendering', () => {
+  const withHour = {
+    ...fortune,
+    ganzhi: { ...fortune.ganzhi, hour: '庚午' },
+  };
+
+  it('formatText shows hour pillar when present', () => {
+    expect(formatText(withHour, { noColor: true })).toContain('庚午时');
+    expect(formatText(fortune, { noColor: true })).not.toContain('庚午时');
+  });
+
+  it('formatMarkdown shows hour pillar when present', () => {
+    expect(formatMarkdown(withHour)).toContain('庚午时');
+  });
+});
+
 describe('formatMarkdown', () => {
   it('returns valid markdown', () => {
     const result = formatMarkdown(fortune);

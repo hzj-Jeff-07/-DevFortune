@@ -19,6 +19,12 @@ describe('parseArgs', () => {
     expect(parseArgs(['--date', '2024-01-01']).date).toBe('2024-01-01');
   });
 
+  it('parses -t / --time', () => {
+    expect(parseArgs(['-t', '14:30']).time).toBe('14:30');
+    expect(parseArgs(['--time', '09:05']).time).toBe('09:05');
+    expect(parseArgs([]).time).toBeUndefined();
+  });
+
   it('parses -D / --detail', () => {
     expect(parseArgs(['-D']).detail).toBe(true);
     expect(parseArgs(['--detail']).detail).toBe(true);

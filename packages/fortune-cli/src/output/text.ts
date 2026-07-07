@@ -54,7 +54,8 @@ export function formatText(fortune: Fortune, opts: TextOptions = {}): string {
   const raw = opts.raw ?? false;
 
   const dateStr = fortune.date;
-  const ganzhi = `${fortune.ganzhi.year}年 ${fortune.ganzhi.month}月 ${fortune.ganzhi.day}日`;
+  const hourPart = fortune.ganzhi.hour ? ` ${fortune.ganzhi.hour}时` : '';
+  const ganzhi = `${fortune.ganzhi.year}年 ${fortune.ganzhi.month}月 ${fortune.ganzhi.day}日${hourPart}`;
   const dominant = WUXING_NAMES[fortune.wuxing.dominant] ?? fortune.wuxing.dominant;
   const lucky = WUXING_NAMES[fortune.wuxing.luckyElement] ?? fortune.wuxing.luckyElement;
   const stars = scoreToStars(fortune.fortune.score);

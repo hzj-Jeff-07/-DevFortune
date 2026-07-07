@@ -1,5 +1,6 @@
 export interface CliArgs {
   date?: string;
+  time?: string;
   detail: boolean;
   brief: boolean;
   format?: 'text' | 'json' | 'markdown';
@@ -26,6 +27,10 @@ export function parseArgs(argv: string[]): CliArgs {
       case '-d':
       case '--date':
         result.date = argv[++i];
+        break;
+      case '-t':
+      case '--time':
+        result.time = argv[++i];
         break;
       case '-D':
       case '--detail':

@@ -1,4 +1,4 @@
-import { getDailyFortune } from '@devfortune/core';
+import { getDailyFortune, getHourPillar } from '@devfortune/core';
 import { parseArgs } from './commands/parser.js';
 import { formatText } from './output/text.js';
 import { formatMarkdown } from './output/markdown.js';
@@ -12,6 +12,7 @@ const HELP = `devfortune - 程序员每日运势
 
 选项：
   -d, --date <date>       指定日期 (YYYY-MM-DD)，默认今天
+  -t, --time <HH:mm>      指定时刻，输出附加时柱
   -D, --detail            显示详细五行分析
   -b, --brief             简洁模式（单行输出）
   -f, --format <format>   输出格式: text (默认) | json | markdown
@@ -53,8 +54,20 @@ export function run(argv: string[]): void {
     process.exit(3);
   }
 
+  if (args.time) {
+    const m = /^([01]?\d|2[0-3]):([0-5]\d)$/.exec(args.time);
+    if (!m) {
+      process.stderr.write(`错误：无效的时间格式 "${args.time}"，请使用 HH:mm\n`);
+      process.exit(2);
+    }
+    date.setHours(Number(m[1]), Number(m[2]), 0, 0);
+  }
+
   try {
     const fortune = getDailyFortune(date);
+    if (args.time) {
+      fortune.ganzhi.hour = getHourPillar(date).display;
+    }
     const output = render(fortune, args);
     process.stdout.write(output + '\n');
   } catch (err) {

@@ -165,6 +165,8 @@ export interface Fortune {
     year: string;
     month: string;
     day: string;
+    /** 时柱，仅在调用方明确提供时刻时存在 */
+    hour?: string;
   };
   wuxing: {
     dominant: string;
