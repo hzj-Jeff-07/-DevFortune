@@ -4,6 +4,7 @@ import { formatText } from './output/text.js';
 import type { WuXingDetail } from './output/text.js';
 import { formatMarkdown } from './output/markdown.js';
 import { getLabels, resolveLocale } from './output/labels.js';
+import { shouldUseColor } from './output/color.js';
 import type { CliLocale } from './output/labels.js';
 import type { Fortune } from '@devfortune/core';
 
@@ -117,7 +118,7 @@ function render(
 
   return formatText(fortune, {
     detail,
-    noColor: args.noColor,
+    noColor: !shouldUseColor(args.noColor, process.env, process.stdout.isTTY),
     raw: args.raw,
     locale,
   });
