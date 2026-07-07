@@ -1,6 +1,7 @@
-import { getDailyFortune, getHourPillar } from '@devfortune/core';
+import { getDailyFortune, getHourPillar, getGanZhi, analyzeWuXing } from '@devfortune/core';
 import { parseArgs } from './commands/parser.js';
 import { formatText } from './output/text.js';
+import type { WuXingDetail } from './output/text.js';
 import { formatMarkdown } from './output/markdown.js';
 import { getLabels, resolveLocale } from './output/labels.js';
 import type { CliLocale } from './output/labels.js';
@@ -73,7 +74,18 @@ export function run(argv: string[]): void {
     if (args.time) {
       fortune.ganzhi.hour = getHourPillar(date).display;
     }
-    const output = render(fortune, args, locale);
+
+    let detail: WuXingDetail | undefined;
+    if (args.detail) {
+      const wuxing = analyzeWuXing(getGanZhi(date));
+      detail = {
+        distribution: wuxing.distribution,
+        strength: wuxing.strength,
+        missing: wuxing.missing,
+      };
+    }
+
+    const output = render(fortune, args, locale, detail);
     process.stdout.write(output + '\n');
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err);
@@ -85,12 +97,13 @@ export function run(argv: string[]): void {
 function render(
   fortune: Fortune,
   args: ReturnType<typeof parseArgs>,
-  locale: CliLocale
+  locale: CliLocale,
+  detail?: WuXingDetail
 ): string {
   const format = args.format ?? 'text';
 
   if (format === 'json') {
-    return JSON.stringify(fortune, null, 2);
+    return JSON.stringify(detail ? { ...fortune, detail } : fortune, null, 2);
   }
 
   if (format === 'markdown') {
@@ -103,7 +116,7 @@ function render(
   }
 
   return formatText(fortune, {
-    detail: args.detail,
+    detail,
     noColor: args.noColor,
     raw: args.raw,
     locale,
