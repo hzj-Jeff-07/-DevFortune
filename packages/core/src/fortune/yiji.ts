@@ -10,9 +10,18 @@ function dateToSeed(date: Date): number {
   return y * 10000 + m * 100 + d;
 }
 
-/** 确定性选择 */
-export function deterministicSelect<T>(items: T[], date: Date): T {
-  const seed = dateToSeed(date);
+/** 32 位整数混淆，让相邻日期的选择不呈顺序轮转 */
+function mix(n: number): number {
+  let h = n | 0;
+  h = Math.imul(h ^ (h >>> 16), 0x45d9f3b);
+  h = Math.imul(h ^ (h >>> 16), 0x45d9f3b);
+  h ^= h >>> 16;
+  return h >>> 0;
+}
+
+/** 确定性选择；salt 用于同一天内多处选择互不相关 */
+export function deterministicSelect<T>(items: T[], date: Date, salt = 0): T {
+  const seed = mix(dateToSeed(date) ^ Math.imul(salt, 0x9e3779b9));
   const index = seed % items.length;
   return items[index];
 }
@@ -41,7 +50,7 @@ export function generateYiJi(
   const generatedElement = SHENG_MAP[dominantKey];
   const generatedMapping = map.mappings[generatedElement];
   if (generatedMapping && generatedMapping.themes.length > 0) {
-    yi.push(deterministicSelect(generatedMapping.themes, date));
+    yi.push(deterministicSelect(generatedMapping.themes, date, 1));
   }
 
   // 忌：被 dominant 相克元素的 unlucky + dominant 自身的 unlucky

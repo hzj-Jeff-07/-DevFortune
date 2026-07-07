@@ -6,6 +6,7 @@ import {
   getNayin,
   getJiaZiIndex,
 } from './data.js';
+import { getJieDay, getLiChunDay } from './jieqi.js';
 
 const MIN_DATE = new Date(1900, 0, 1);
 const MAX_DATE = new Date(2100, 11, 31);
@@ -14,12 +15,9 @@ const MAX_DATE = new Date(2100, 11, 31);
 const BASE_DATE = new Date(2000, 0, 7);
 const MS_PER_DAY = 24 * 60 * 60 * 1000;
 
-// 立春日期近似表（1900-2100年的2月3-5日）
-// 简化方案：使用近似值，绝大多数年份立春在2月4日
+/** 立春日期（天文精确计算，按东八区取日） */
 function getLiChunDate(year: number): Date {
-  // 立春一般在2月3日-5日之间
-  // 使用简化近似：大多数年份为2月4日
-  return new Date(year, 1, 4);
+  return new Date(year, 1, getLiChunDay(year));
 }
 
 function validateDate(date: Date): void {
@@ -81,13 +79,11 @@ function getMonthTianGanBase(yearTianGanIndex: number): number {
 /** 计算月柱 */
 export function getMonthPillar(date: Date, yearPillar: GanZhiPillar): GanZhiPillar {
   // 月支：正月=寅(2)，二月=卯(3)，...，十二月=丑(1)
-  // 节气分界近似：每月约5日为节气分界
   const month = date.getMonth(); // 0-11 (Jan=0)
   const day = date.getDate();
 
-  // 近似节气分界日（每月的节气日期）
-  const jieQiDays = [6, 4, 6, 5, 6, 6, 7, 8, 8, 8, 7, 7];
-  const jieDay = jieQiDays[month];
+  // 月柱分界节气日（天文精确计算，按东八区取日）
+  const jieDay = getJieDay(date.getFullYear(), month + 1);
 
   // 当月节气前属于上一个月柱
   let monthIndex: number;
@@ -113,8 +109,40 @@ export function getMonthPillar(date: Date, yearPillar: GanZhiPillar): GanZhiPill
   return buildPillar(tianGanIndex, diZhiIndex, jiaziIndex);
 }
 
-/** 获取完整四柱干支 */
-export function getGanZhi(date: Date): GanZhiResult {
+/** 时柱五鼠遁：根据日干确定子时天干 */
+function getHourTianGanBase(dayTianGanIndex: number): number {
+  // 甲己还加甲(0)、乙庚丙作初(2)、丙辛从戊起(4)、丁壬庚子居(6)、戊癸起壬子(8)
+  return (dayTianGanIndex % 5) * 2;
+}
+
+/**
+ * 计算时柱。
+ *
+ * 时支按两小时一辰划分（23:00-00:59 为子时）。
+ * 23 时之后属次日子时，时干按次日日干推算（子正换日惯例）。
+ */
+export function getHourPillar(date: Date): GanZhiPillar {
+  const hour = date.getHours();
+  const diZhiIndex = Math.floor((hour + 1) / 2) % 12;
+
+  const dayForStem = hour >= 23 ? new Date(date.getTime() + MS_PER_DAY) : date;
+  const dayPillar = getDayPillar(dayForStem);
+
+  const base = getHourTianGanBase(dayPillar.tianGan.index);
+  const tianGanIndex = (base + diZhiIndex) % 10;
+
+  const jiaziIndex = getJiaZiIndex(tianGanIndex, diZhiIndex);
+  return buildPillar(tianGanIndex, diZhiIndex, jiaziIndex);
+}
+
+/** 干支推算选项 */
+export interface GanZhiOptions {
+  /** 是否包含时柱（时柱会参与五行分布统计，影响运势结果），默认不包含 */
+  includeHour?: boolean;
+}
+
+/** 获取完整干支（默认年月日三柱，includeHour 时附加时柱） */
+export function getGanZhi(date: Date, options?: GanZhiOptions): GanZhiResult {
   validateDate(date);
 
   const yearPillar = getYearPillar(date);
@@ -125,6 +153,7 @@ export function getGanZhi(date: Date): GanZhiResult {
     year: yearPillar,
     month: monthPillar,
     day: dayPillar,
+    ...(options?.includeHour ? { hour: getHourPillar(date) } : {}),
     solarDate: date,
   };
 }

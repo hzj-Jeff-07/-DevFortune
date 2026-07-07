@@ -6,7 +6,8 @@ export { calculateScore, scoreToLevel } from './fortune/scorer.js';
 export { generateYiJi, deterministicSelect } from './fortune/yiji.js';
 
 // GanZhi
-export { getGanZhi } from './ganzhi/index.js';
+export { getGanZhi, getHourPillar, getJieDay, getLiChunDay } from './ganzhi/index.js';
+export type { GanZhiOptions } from './ganzhi/index.js';
 export {
   getTianGanInfo,
   getDiZhiInfo,

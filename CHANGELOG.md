@@ -12,6 +12,24 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+### 新增 / Added
+
+- **时柱推算**：五鼠遁法推算时柱，23 时后按次日子时取时干（子正换日惯例）；`getHourPillar(date)` 或 `getGanZhi(date, { includeHour: true })` / Hour pillar calculation via the Five-Rats method (`getHourPillar`, opt-in via `getGanZhi(date, { includeHour: true })`); hours from 23:00 use the next day's stem
+- **节气 API**：导出 `getJieDay(year, month)` 与 `getLiChunDay(year)` / Exported `getJieDay` and `getLiChunDay`
+- **发布流水线**：接入 changesets，合入 main 后自动创建版本 PR 并发布 npm 包 / Added a changesets-based release pipeline (version PR + npm publish on merge)
+
+### 修复 / Fixed
+
+- **节气精确计算**：立春与月柱分界节气改用太阳视黄经天文算法（按东八区取日），替代固定日期近似表，修复约三分之一年份在节气边界前后 1-2 天年柱/月柱推算错误的问题 / Solar terms (LiChun and monthly boundaries) are now computed astronomically from apparent solar longitude (dated in UTC+8) instead of fixed-date approximations, fixing year/month pillar errors near term boundaries
+- **Web 运势时效**：首页改为在浏览器端按访问者本地日期计算运势，修复服务端渲染导致的运势过期与时区错位 / The web homepage now computes the fortune client-side from the visitor's local date, fixing stale fortunes and server-timezone skew
+- **VS Code 扩展跨天刷新**：编辑器常驻多日时，状态栏与侧边栏在日期变更后自动刷新 / The status bar and sidebar now refresh automatically when the day rolls over
+- **包元数据**：`@devfortune/core` 的 `exports` 条件顺序修正（`types` 在前），各包 `license` 字段统一为 Apache-2.0 / Fixed `exports` condition order in `@devfortune/core` (`types` first) and aligned package `license` fields with the repository's Apache-2.0 license
+
+### 变更 / Changed
+
+- **文案选择算法**：确定性选择加入整数混淆哈希，相邻日期不再顺序轮转模板 / Deterministic template selection now uses an integer mixing hash so consecutive dates no longer cycle templates sequentially
+- **CI 优化**：Node 版本矩阵仅构建测试 core/CLI/扩展，Web 应用单独构建一次，并启用 turbo 缓存 / CI matrix now covers core/CLI/extension only, the web app builds once, and turbo caching is enabled
+
 ### 计划中 / Planned
 
 - 多语言支持（繁体中文、英文、日文）/ Multi-language support (Traditional Chinese, English, Japanese)

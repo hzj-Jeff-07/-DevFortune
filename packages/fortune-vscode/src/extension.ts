@@ -58,6 +58,19 @@ export function activate(context: vscode.ExtensionContext) {
     vscode.window.registerWebviewViewProvider('devfortune.sidebar', sidebarProvider)
   );
 
+  // 跨天后自动刷新（VS Code 常驻多日时状态栏不能停留在昨天的运势）
+  let lastDay = todayStr();
+  const rolloverTimer = setInterval(() => {
+    const now = todayStr();
+    if (now !== lastDay) {
+      lastDay = now;
+      const f = getFortune(context);
+      updateStatusBar(f);
+      sidebarProvider.refresh();
+    }
+  }, 60_000);
+  context.subscriptions.push({ dispose: () => clearInterval(rolloverTimer) });
+
   // Commands
   context.subscriptions.push(
     vscode.commands.registerCommand('devfortune.showFortune', () => {
