@@ -13,7 +13,7 @@ import { getGanZhi } from '../ganzhi/index.js';
 import { analyzeWuXing } from '../wuxing/index.js';
 import { generateYiJi, deterministicSelect } from './yiji.js';
 import { calculateScore } from './scorer.js';
-import { getDefaultTemplates } from '../templates/index.js';
+import { getDefaultTemplates, getDefaultMapping } from '../templates/index.js';
 
 /** 构建匹配键 */
 function getElementState(wuxing: WuXingAnalysis): 'prosperous' | 'moderate' | 'weak' {
@@ -92,11 +92,11 @@ function renderFortune(
 export function getDailyFortune(date: Date, options?: FortuneOptions): Fortune {
   const ganzhi = getGanZhi(date);
   const wuxing = analyzeWuXing(ganzhi);
-  const yiji = generateYiJi(wuxing, date, options?.mapping);
+  const yiji = generateYiJi(wuxing, date, options?.mapping ?? getDefaultMapping(options?.locale));
   const score = calculateScore(wuxing);
 
   const elState = getElementState(wuxing);
-  const templates = options?.templates ?? getDefaultTemplates();
+  const templates = options?.templates ?? getDefaultTemplates(options?.locale);
   const template = matchTemplate(score.level, wuxing.dominant, elState, templates, date);
 
   return renderFortune(date, ganzhi, wuxing, yiji, score, template);

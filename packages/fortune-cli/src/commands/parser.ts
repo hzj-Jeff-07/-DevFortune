@@ -1,5 +1,7 @@
 export interface CliArgs {
   date?: string;
+  time?: string;
+  lang?: string;
   detail: boolean;
   brief: boolean;
   format?: 'text' | 'json' | 'markdown';
@@ -27,6 +29,20 @@ export function parseArgs(argv: string[]): CliArgs {
       case '--date':
         result.date = argv[++i];
         break;
+      case '-t':
+      case '--time':
+        result.time = argv[++i];
+        break;
+      case '-l':
+      case '--lang': {
+        const lang = argv[++i];
+        if (lang === 'zh' || lang === 'zh-CN' || lang === 'en' || lang === 'en-US') {
+          result.lang = lang;
+        } else {
+          process.stderr.write(`警告：未知语言 "${lang}"，使用默认语言\n`);
+        }
+        break;
+      }
       case '-D':
       case '--detail':
         result.detail = true;

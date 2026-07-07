@@ -20,7 +20,15 @@ export {
 export { analyzeWuXing, getRelation } from './wuxing/index.js';
 
 // Templates
-export { getDefaultTemplates, DEFAULT_MAPPING } from './templates/index.js';
+export {
+  getDefaultTemplates,
+  getDefaultMapping,
+  DEFAULT_MAPPING,
+  DEFAULT_MAPPING_EN,
+  DEFAULT_TEMPLATES,
+  DEFAULT_TEMPLATES_EN,
+} from './templates/index.js';
+export type { Locale } from './templates/index.js';
 
 // Types (re-export as types)
 export {

@@ -14,6 +14,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### 新增 / Added
 
+- **Web 分享卡片**：一键生成运势 PNG 卡片并下载（Canvas 绘制，无额外依赖）/ Web share card: one-click PNG export rendered via Canvas
+- **Web 日期导航**：查看任意日期（1900-2100）的运势，支持前后翻页与回到今天 / Web date navigation for any supported date with prev/next/today controls
+- **Web 中英文切换**：跟随浏览器语言自动选择，手动切换后记忆偏好；CLI 同步支持 `-l/--lang` / Web locale toggle (auto-detect + persisted preference); CLI gains `-l/--lang`
+- **CLI 时柱**：`-t/--time <HH:mm>` 输出附加时柱 / CLI `--time` option appends the hour pillar
+- **VS Code 扩展设置**：语言（中/英/自动跟随界面语言）、状态栏开关、每日运势通知；配置变化即时生效 / VS Code settings: language (auto/zh/en), status bar toggle, daily notification; changes apply immediately
+
 - **时柱推算**：五鼠遁法推算时柱，23 时后按次日子时取时干（子正换日惯例）；`getHourPillar(date)` 或 `getGanZhi(date, { includeHour: true })` / Hour pillar calculation via the Five-Rats method (`getHourPillar`, opt-in via `getGanZhi(date, { includeHour: true })`); hours from 23:00 use the next day's stem
 - **节气 API**：导出 `getJieDay(year, month)` 与 `getLiChunDay(year)` / Exported `getJieDay` and `getLiChunDay`
 - **发布流水线**：接入 changesets，合入 main 后自动创建版本 PR 并发布 npm 包 / Added a changesets-based release pipeline (version PR + npm publish on merge)

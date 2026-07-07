@@ -1,0 +1,217 @@
+import type { FortuneTemplate } from '../types.js';
+
+/**
+ * English fortune templates — same id scheme as the zh-CN set (see ADR-008).
+ * Every id in defaults.ts must have a counterpart here; a parity test enforces this.
+ */
+export const DEFAULT_TEMPLATES_EN: FortuneTemplate[] = [
+  // ============ GREAT ============
+  {
+    id: 'great-001',
+    sentiment: 'great',
+    overview: 'The Five Elements are in grand harmony — your PRs sail through review today!',
+    do: ['Submit that important PR', 'Ship a release', 'Refactor core modules', 'Give a tech talk'],
+    dont: ['Slack off', 'Procrastinate'],
+    tip: 'Ride the momentum and knock out that big task you have been putting off',
+  },
+  {
+    id: 'great-002',
+    sentiment: 'great',
+    overview: 'Inspiration flows like a spring today — bugs see you coming and flee.',
+    do: ['Tackle hard problems', 'Design system architecture', 'Write complex algorithms', 'Optimize hot paths'],
+    dont: ['Waste the day on busywork', 'Sit through pointless meetings'],
+    tip: 'Schedule your most challenging task for today',
+  },
+  {
+    id: 'great-003',
+    sentiment: 'great',
+    overview: 'The stars favor programming — nothing can stop you at the keyboard.',
+    do: ['Start a new project', 'Scaffold something fresh', 'Learn a new framework', 'Draft a design doc'],
+    dont: ['rm -rf and run', 'Cut features'],
+    tip: 'Kick off that side project you have been dreaming about',
+  },
+  {
+    id: 'great-004',
+    sentiment: 'great',
+    overview: 'Your code writes itself today — logic flows like water.',
+    do: ['Untangle complex logic', 'Write unit tests', 'Polish the docs', 'Do code reviews'],
+    dont: ['Coast through the day', 'Skip the tests'],
+    tip: 'Review a teammate’s code — good fortune is contagious',
+  },
+  {
+    id: 'great-005',
+    sentiment: 'great',
+    overview: 'Fortune at max level — even CI is too embarrassed to fail you.',
+    do: ['Merge long-lived branches', 'Upgrade dependencies', 'Deploy to production', 'Write integration tests'],
+    dont: ['Skip testing', 'Bypass review'],
+    tip: 'Today is the day for the bold moves you usually avoid',
+  },
+
+  // ============ GOOD ============
+  {
+    id: 'good-001',
+    sentiment: 'good',
+    overview: 'Mildly auspicious — a fine day to squash that bug from three days ago.',
+    do: ['Fix bugs', 'Improve error handling', 'Add test cases', 'Pay down tech debt'],
+    dont: ['Adopt a new framework', 'Refactor broadly'],
+    tip: 'Stay focused — today favors finishing things',
+  },
+  {
+    id: 'good-002',
+    sentiment: 'good',
+    overview: 'Decent fortune today — steady progress, rock-solid code quality.',
+    do: ['Improve code structure', 'Add type annotations', 'Improve logging', 'Update the README'],
+    dont: ['Rush a release', 'Skip tests'],
+    tip: 'Small steps, continuous improvement',
+  },
+  {
+    id: 'good-003',
+    sentiment: 'good',
+    overview: 'Clear skies, good mood — the code practically writes itself.',
+    do: ['Write business logic', 'Integrate APIs', 'Wrangle data', 'Polish the UI'],
+    dont: ['Fight with product managers', 'Muscle through tech debt'],
+    tip: 'Communicate early — your luck with people is good today too',
+  },
+  {
+    id: 'good-004',
+    sentiment: 'good',
+    overview: 'Good fortune and a clear head — noticeably more productive than usual.',
+    do: ['Write tech docs', 'Untangle code logic', 'Break down tasks', 'Write your weekly report'],
+    dont: ['Chase shiny new things', 'Change too much at once'],
+    tip: 'Split the big task into small ones and clear them one by one',
+  },
+  {
+    id: 'good-005',
+    sentiment: 'good',
+    overview: 'A day for craftsmanship — polish your code to a shine.',
+    do: ['Rename variables', 'Extract shared helpers', 'Tidy imports', 'Clean up comments'],
+    dont: ['Refactor with a chainsaw', 'Rearchitect'],
+    tip: 'Details make perfection — today is about code aesthetics',
+  },
+
+  // ============ NEUTRAL ============
+  {
+    id: 'neutral-001',
+    sentiment: 'neutral',
+    overview: 'Neither lucky nor unlucky — just crank out the CRUD as usual.',
+    do: ['Write routine code', 'Work the ticket queue', 'Attend standup', 'Reply to messages'],
+    dont: ['Attempt anything risky', 'Launch big features'],
+    tip: 'An uneventful day is a won day',
+  },
+  {
+    id: 'neutral-002',
+    sentiment: 'neutral',
+    overview: 'Fortune is flat today — no heroics, slow and steady.',
+    do: ['Day-to-day development', 'Fix small bugs', 'Write unit tests', 'Groom the TODO list'],
+    dont: ['Refactor core modules', 'Migrate the database'],
+    tip: 'Keep your rhythm — neither reckless nor idle',
+  },
+  {
+    id: 'neutral-003',
+    sentiment: 'neutral',
+    overview: 'Today is like code mid-compile — it is running, just do not expect speed.',
+    do: ['Review requirements', 'Write API docs', 'Do routine checks', 'Clean your inbox'],
+    dont: ['push --force', 'Merge conflicted code'],
+    tip: 'Slow is smooth, smooth is fast',
+  },
+  {
+    id: 'neutral-004',
+    sentiment: 'neutral',
+    overview: 'A by-the-book day, best spent on by-the-book work.',
+    do: ['Maintain existing features', 'Fix edge cases', 'Bump version numbers', 'Write comments'],
+    dont: ['Try experimental hacks', 'Touch global config'],
+    tip: 'Aim for zero surprises today',
+  },
+  {
+    id: 'neutral-005',
+    sentiment: 'neutral',
+    overview: 'Fortune reads 200 OK — normal response, no easter eggs.',
+    do: ['Follow the plan', 'Finish scheduled tasks', 'Self-test your code', 'File your daily report'],
+    dont: ['Accept last-minute requests', 'Switch tech stacks'],
+    tip: 'Treat today as a perfectly ordinary day',
+  },
+
+  // ============ BAD ============
+  {
+    id: 'bad-001',
+    sentiment: 'bad',
+    overview: 'Keep a low profile today — and absolutely no git push --force.',
+    do: ['Read documentation', 'Organize notes', 'Do tech research', 'Clean your desktop'],
+    dont: ['Deploy to production', 'Merge to main', 'Delete data'],
+    tip: 'More thinking, less typing — tomorrow will be better',
+  },
+  {
+    id: 'bad-002',
+    sentiment: 'bad',
+    overview: 'Fortune is off today — invisible bugs may be lurking in your code.',
+    do: ['Backfill tests', 'Add logging', 'Back up your work', 'Write a rollback plan'],
+    dont: ['Ship new features', 'Refactor core logic', 'Delete old code'],
+    tip: 'Today’s bugs may not surface until tomorrow — stay alert',
+  },
+  {
+    id: 'bad-003',
+    sentiment: 'bad',
+    overview: 'Things go sideways easily today — engage fool-proof mode.',
+    do: ['Review your own code', 'Check config files', 'Verify environment variables', 'Back up data'],
+    dont: ['Release', 'Migrate data', 'Change permissions'],
+    tip: 'Think twice, and check once more before you commit',
+  },
+  {
+    id: 'bad-004',
+    sentiment: 'bad',
+    overview: 'The elements clash — your CI/CD pipeline may throw a tantrum today.',
+    do: ['Fix the pipeline', 'Check environments', 'Watch the dashboards', 'Run a fire drill'],
+    dont: ['Touch CI config', 'Upgrade the cluster', 'Tune rate limits'],
+    tip: 'When things break, breathe first, then read the logs',
+  },
+  {
+    id: 'bad-005',
+    sentiment: 'bad',
+    overview: 'Naming inspiration has run dry — foo and bar as far as the eye can see.',
+    do: ['Read great source code', 'Study naming conventions', 'Review design patterns', 'Grind LeetCode'],
+    dont: ['Write core modules', 'Design APIs', 'Make architecture calls'],
+    tip: 'Recharge before you output — no need to rush',
+  },
+
+  // ============ TERRIBLE ============
+  {
+    id: 'terrible-001',
+    sentiment: 'terrible',
+    overview: 'Fortune has left the building — read code, write none, stay safe.',
+    do: ['Slack off responsibly', 'Read tech blogs', 'Browse the community', 'Drink coffee'],
+    dont: ['Write code', 'Deploy', 'Change config', 'Touch production'],
+    tip: 'Survival first — the code can wait until tomorrow',
+  },
+  {
+    id: 'terrible-002',
+    sentiment: 'terrible',
+    overview: 'Extreme rm -rf hazard today — keep away from the terminal.',
+    do: ['Make plans', 'Sketch prototypes', 'Build slide decks', 'Team bonding'],
+    dont: ['Run commands', 'SSH into servers', 'Touch the database', 'Force push'],
+    tip: 'Hands off the keyboard buys you a day of peace',
+  },
+  {
+    id: 'terrible-003',
+    sentiment: 'terrible',
+    overview: 'Fortune hit rock bottom and is bouncing back… it has not bounced yet.',
+    do: ['Take a day off', 'Nap', 'Go for a walk', 'Chat with teammates'],
+    dont: ['Write business logic', 'Make technical decisions', 'Release', 'Interview'],
+    tip: 'On days like this, doing nothing is peak productivity',
+  },
+  {
+    id: 'terrible-004',
+    sentiment: 'terrible',
+    overview: 'Every bug resurrects today — it is Halloween in your codebase.',
+    do: ['Log the bugs', 'Groom the backlog', 'Update Jira', 'Tidy your desk'],
+    dont: ['Fix known bugs', 'Close tickets', 'Merge code', 'Go live'],
+    tip: 'Do not fix bugs today — they will not stay fixed. Write them down for tomorrow',
+  },
+  {
+    id: 'terrible-005',
+    sentiment: 'terrible',
+    overview: 'A good day to ponder: why did I become a programmer?',
+    do: ['Watch conference talks', 'Browse GitHub Trending', 'Write a year-in-review', 'Meditate'],
+    dont: ['Accept new requirements', 'Make promises', 'Estimate timelines', 'Change production config'],
+    tip: 'Revisit what got you into this — and write no code today',
+  },
+];

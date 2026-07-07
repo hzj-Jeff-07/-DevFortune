@@ -1,12 +1,6 @@
 import type { Fortune } from '@devfortune/core';
-
-const WUXING_NAMES: Record<string, string> = {
-  wood: '木', fire: '火', earth: '土', metal: '金', water: '水',
-};
-
-const LEVEL_NAMES: Record<string, string> = {
-  great: '大吉', good: '吉', neutral: '平', bad: '凶', terrible: '大凶',
-};
+import { getLabels } from './labels.js';
+import type { CliLocale } from './labels.js';
 
 function scoreToStars(score: number): string {
   if (score >= 85) return '★★★★★';
@@ -16,38 +10,41 @@ function scoreToStars(score: number): string {
   return '★☆☆☆☆';
 }
 
-export function formatMarkdown(fortune: Fortune): string {
-  const dateStr = fortune.date;
-  const ganzhi = `${fortune.ganzhi.year}年 ${fortune.ganzhi.month}月 ${fortune.ganzhi.day}日`;
-  const dominant = WUXING_NAMES[fortune.wuxing.dominant] ?? fortune.wuxing.dominant;
-  const stars = scoreToStars(fortune.fortune.score);
-  const level = LEVEL_NAMES[fortune.fortune.level] ?? fortune.fortune.level;
+export function formatMarkdown(fortune: Fortune, locale?: CliLocale): string {
+  const L = getLabels(locale);
 
+  const dateStr = fortune.date;
+  const ganzhi = L.ganzhiLine(fortune.ganzhi);
+  const dominant = L.elements[fortune.wuxing.dominant] ?? fortune.wuxing.dominant;
+  const stars = scoreToStars(fortune.fortune.score);
+  const level = L.levels[fortune.fortune.level] ?? fortune.fortune.level;
+
+  const colon = L.colon.trim();
   const lines: string[] = [];
-  lines.push(`## ${dateStr} 程序员运势`);
+  lines.push(`## ${dateStr} ${L.mdTitle}`);
   lines.push('');
-  lines.push(`**干支：** ${ganzhi}`);
-  lines.push(`**五行：** ${dominant}`);
-  lines.push(`**运势：** ${stars} (${level})`);
+  lines.push(`**${L.mdGanzhi}${colon}** ${ganzhi}`);
+  lines.push(`**${L.mdWuxing}${colon}** ${dominant}`);
+  lines.push(`**${L.mdFortune}${colon}** ${stars} (${level})`);
   lines.push('');
 
   lines.push(`> ${fortune.fortune.overview}`);
   lines.push('');
 
-  lines.push('### 宜');
+  lines.push(`### ${L.yi}`);
   for (const item of fortune.fortune.yi) {
     lines.push(`- ${item}`);
   }
   lines.push('');
 
-  lines.push('### 忌');
+  lines.push(`### ${L.ji}`);
   for (const item of fortune.fortune.ji) {
     lines.push(`- ${item}`);
   }
   lines.push('');
 
-  lines.push(`**幸运编程语言：** ${fortune.fortune.luckyLang}`);
-  lines.push(`**幸运开发工具：** ${fortune.fortune.luckyTool}`);
+  lines.push(`**${L.luckyLang}${colon}** ${fortune.fortune.luckyLang}`);
+  lines.push(`**${L.luckyTool}${colon}** ${fortune.fortune.luckyTool}`);
 
   if (fortune.fortune.tip) {
     lines.push('');

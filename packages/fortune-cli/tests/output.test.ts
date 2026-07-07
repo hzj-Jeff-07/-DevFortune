@@ -4,6 +4,7 @@ import { formatText } from '../src/output/text.js';
 import { getDailyFortune } from '@devfortune/core';
 
 const fortune = getDailyFortune(new Date(2024, 2, 15));
+const fortuneEn = getDailyFortune(new Date(2024, 2, 15), { locale: 'en-US' });
 
 describe('formatText', () => {
   it('returns string output', () => {
@@ -37,6 +38,40 @@ describe('formatText', () => {
   it('noColor mode removes ANSI codes', () => {
     const result = formatText(fortune, { noColor: true });
     expect(result).not.toContain('\x1b[');
+  });
+});
+
+describe('en-US locale rendering', () => {
+  it('formatText uses English labels', () => {
+    const result = formatText(fortuneEn, { noColor: true, raw: true, locale: 'en-US' });
+    expect(result).toContain('Do: ');
+    expect(result).toContain('Avoid: ');
+    expect(result).toContain('Lucky language: ');
+    expect(result).not.toContain('宜');
+  });
+
+  it('formatMarkdown uses English labels', () => {
+    const result = formatMarkdown(fortuneEn, 'en-US');
+    expect(result).toContain('Developer Fortune');
+    expect(result).toContain('### Do');
+    expect(result).toContain('### Avoid');
+    expect(result).not.toContain('宜');
+  });
+});
+
+describe('hour pillar rendering', () => {
+  const withHour = {
+    ...fortune,
+    ganzhi: { ...fortune.ganzhi, hour: '庚午' },
+  };
+
+  it('formatText shows hour pillar when present', () => {
+    expect(formatText(withHour, { noColor: true })).toContain('庚午时');
+    expect(formatText(fortune, { noColor: true })).not.toContain('庚午时');
+  });
+
+  it('formatMarkdown shows hour pillar when present', () => {
+    expect(formatMarkdown(withHour)).toContain('庚午时');
   });
 });
 
