@@ -25,6 +25,14 @@ describe('parseArgs', () => {
     expect(parseArgs([]).time).toBeUndefined();
   });
 
+  it('option missing its value does not swallow the next flag', () => {
+    const args = parseArgs(['-d', '--brief']);
+    expect(args.date).toBeUndefined();
+    expect(args.brief).toBe(true);
+    expect(parseArgs(['-d']).date).toBeUndefined();
+    expect(parseArgs(['-f']).format).toBeUndefined();
+  });
+
   it('parses -l / --lang with valid values', () => {
     expect(parseArgs(['-l', 'en']).lang).toBe('en');
     expect(parseArgs(['--lang', 'zh-CN']).lang).toBe('zh-CN');

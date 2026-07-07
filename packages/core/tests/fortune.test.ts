@@ -1,6 +1,8 @@
 import { describe, it, expect } from 'vitest';
 import { getDailyFortune } from '../src/fortune/pipeline.js';
-import { calculateScore, scoreToLevel } from '../src/fortune/scorer.js';
+import { calculateScore, scoreToLevel, evaluateDayMaster } from '../src/fortune/scorer.js';
+import { WuXing } from '../src/types.js';
+import type { WuXingAnalysis } from '../src/types.js';
 import { generateYiJi, deterministicSelect } from '../src/fortune/yiji.js';
 import { getGanZhi } from '../src/ganzhi/calculator.js';
 import { analyzeWuXing } from '../src/wuxing/analyzer.js';
@@ -30,6 +32,48 @@ describe('fortune/scorer', () => {
     expect(result.breakdown.balance).toBeGreaterThanOrEqual(0);
     expect(result.breakdown.dayMasterStrength).toBeGreaterThanOrEqual(0);
     expect(result.breakdown.harmony).toBeGreaterThanOrEqual(0);
+  });
+});
+
+describe('fortune/evaluateDayMaster', () => {
+  function withRatio(ratio: number): WuXingAnalysis {
+    const dom = ratio * 10;
+    const rest = (10 - dom) / 4;
+    return {
+      dominant: WuXing.Mu,
+      distribution: {
+        [WuXing.Mu]: dom,
+        [WuXing.Huo]: rest,
+        [WuXing.Tu]: rest,
+        [WuXing.Jin]: rest,
+        [WuXing.Shui]: rest,
+      },
+    } as WuXingAnalysis;
+  }
+
+  it('scores 30 in the ideal 15%-35% range', () => {
+    expect(evaluateDayMaster(withRatio(0.15))).toBe(30);
+    expect(evaluateDayMaster(withRatio(0.25))).toBe(30);
+    expect(evaluateDayMaster(withRatio(0.35))).toBe(30);
+  });
+
+  it('is monotonically non-decreasing below the ideal range', () => {
+    let prev = -1;
+    for (let r = 0; r <= 0.15; r += 0.01) {
+      const score = evaluateDayMaster(withRatio(r));
+      expect(score).toBeGreaterThanOrEqual(prev);
+      prev = score;
+    }
+  });
+
+  it('is monotonically non-increasing above the ideal range (no jump at 0.5)', () => {
+    let prev = 31;
+    for (let r = 0.35; r <= 1.0; r += 0.01) {
+      const score = evaluateDayMaster(withRatio(r));
+      expect(score).toBeLessThanOrEqual(prev);
+      prev = score;
+    }
+    expect(evaluateDayMaster(withRatio(1))).toBe(0);
   });
 });
 
