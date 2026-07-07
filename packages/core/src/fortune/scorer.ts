@@ -18,23 +18,21 @@ function calculateBalance(distribution: Record<WuXing, number>): number {
   return Math.round(40 * (1 - normalized));
 }
 
-/** 日主强度 (0-30) */
-function evaluateDayMaster(wuxing: WuXingAnalysis): number {
+/**
+ * 日主强度 (0-30)。
+ *
+ * 理想区间 15%-35% 得满分，两侧线性衰减至 0，全程单调无跳变
+ * （旧实现在占比 0.1 和 0.5 处不连续，且 0.5 之后分数反而回升）。
+ */
+export function evaluateDayMaster(wuxing: WuXingAnalysis): number {
   const total = ALL_ELEMENTS.reduce((sum, e) => sum + wuxing.distribution[e], 0);
   if (total === 0) return 15;
 
   const ratio = wuxing.distribution[wuxing.dominant] / total;
 
-  // 最佳比例约 20%-30%，过高过低都减分
-  if (ratio >= 0.15 && ratio <= 0.35) {
-    return 30;
-  } else if (ratio < 0.1) {
-    return Math.round(ratio * 100);
-  } else if (ratio > 0.5) {
-    return Math.round(30 * (1 - (ratio - 0.35) / 0.65));
-  } else {
-    return Math.round(25 - Math.abs(ratio - 0.25) * 50);
-  }
+  if (ratio >= 0.15 && ratio <= 0.35) return 30;
+  if (ratio < 0.15) return Math.round(30 * (ratio / 0.15));
+  return Math.round(30 * (1 - (ratio - 0.35) / 0.65));
 }
 
 /** 生克和谐度 (0-30) */

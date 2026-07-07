@@ -24,18 +24,30 @@ export function parseArgs(argv: string[]): CliArgs {
   for (let i = 0; i < argv.length; i++) {
     const arg = argv[i];
 
+    /** 取当前选项的参数值；缺失或紧跟另一个选项时告警并返回 undefined */
+    const takeValue = (): string | undefined => {
+      const next = argv[i + 1];
+      if (next === undefined || (next.length > 1 && next.startsWith('-'))) {
+        process.stderr.write(`警告：${arg} 缺少参数值\n`);
+        return undefined;
+      }
+      i++;
+      return next;
+    };
+
     switch (arg) {
       case '-d':
       case '--date':
-        result.date = argv[++i];
+        result.date = takeValue();
         break;
       case '-t':
       case '--time':
-        result.time = argv[++i];
+        result.time = takeValue();
         break;
       case '-l':
       case '--lang': {
-        const lang = argv[++i];
+        const lang = takeValue();
+        if (lang === undefined) break;
         if (lang === 'zh' || lang === 'zh-CN' || lang === 'en' || lang === 'en-US') {
           result.lang = lang;
         } else {
@@ -53,7 +65,8 @@ export function parseArgs(argv: string[]): CliArgs {
         break;
       case '-f':
       case '--format': {
-        const fmt = argv[++i];
+        const fmt = takeValue();
+        if (fmt === undefined) break;
         if (fmt === 'text' || fmt === 'json' || fmt === 'markdown') {
           result.format = fmt;
         } else {
