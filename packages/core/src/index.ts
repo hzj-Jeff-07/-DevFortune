@@ -61,6 +61,5 @@ export type {
 // Error classes
 export {
   DateOutOfRangeError,
-  GanZhiCalculationError,
   TemplateNotFoundError,
 } from './types.js';

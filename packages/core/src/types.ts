@@ -209,7 +209,6 @@ export interface WuXingMapping {
 /** 运势生成选项 */
 export interface FortuneOptions {
   locale?: 'zh-CN' | 'en-US';
-  includeDetail?: boolean;
   mapping?: WuXingMapping;
   templates?: FortuneTemplate[];
 }
@@ -224,16 +223,6 @@ export class DateOutOfRangeError extends Error {
   constructor(date: Date) {
     super(`Date ${date.toISOString()} is out of supported range (1900-01-01 to 2100-12-31)`);
     this.name = 'DateOutOfRangeError';
-  }
-}
-
-export class GanZhiCalculationError extends Error {
-  constructor(
-    readonly date: Date,
-    readonly step: 'year' | 'month' | 'day' | 'hour'
-  ) {
-    super(`GanZhi calculation error at step "${step}" for date ${date.toISOString()}`);
-    this.name = 'GanZhiCalculationError';
   }
 }
 
