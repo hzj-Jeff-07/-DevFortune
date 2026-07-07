@@ -25,6 +25,12 @@ describe('parseArgs', () => {
     expect(parseArgs([]).time).toBeUndefined();
   });
 
+  it('parses -l / --lang with valid values', () => {
+    expect(parseArgs(['-l', 'en']).lang).toBe('en');
+    expect(parseArgs(['--lang', 'zh-CN']).lang).toBe('zh-CN');
+    expect(parseArgs(['-l', 'fr']).lang).toBeUndefined();
+  });
+
   it('parses -D / --detail', () => {
     expect(parseArgs(['-D']).detail).toBe(true);
     expect(parseArgs(['--detail']).detail).toBe(true);

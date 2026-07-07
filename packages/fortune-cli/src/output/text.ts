@@ -1,9 +1,12 @@
 import type { Fortune } from '@devfortune/core';
+import { getLabels } from './labels.js';
+import type { CliLocale } from './labels.js';
 
 interface TextOptions {
   detail?: boolean;
   noColor?: boolean;
   raw?: boolean;
+  locale?: CliLocale;
 }
 
 // ANSI color codes
@@ -41,25 +44,17 @@ function scoreColor(score: number, c: typeof C): string {
   return c.red;
 }
 
-const WUXING_NAMES: Record<string, string> = {
-  wood: '木', fire: '火', earth: '土', metal: '金', water: '水',
-};
-
-const LEVEL_NAMES: Record<string, string> = {
-  great: '大吉', good: '吉', neutral: '平', bad: '凶', terrible: '大凶',
-};
-
 export function formatText(fortune: Fortune, opts: TextOptions = {}): string {
   const c = nc(opts.noColor ?? false);
   const raw = opts.raw ?? false;
+  const L = getLabels(opts.locale);
 
   const dateStr = fortune.date;
-  const hourPart = fortune.ganzhi.hour ? ` ${fortune.ganzhi.hour}时` : '';
-  const ganzhi = `${fortune.ganzhi.year}年 ${fortune.ganzhi.month}月 ${fortune.ganzhi.day}日${hourPart}`;
-  const dominant = WUXING_NAMES[fortune.wuxing.dominant] ?? fortune.wuxing.dominant;
-  const lucky = WUXING_NAMES[fortune.wuxing.luckyElement] ?? fortune.wuxing.luckyElement;
+  const ganzhi = L.ganzhiLine(fortune.ganzhi);
+  const dominant = L.elements[fortune.wuxing.dominant] ?? fortune.wuxing.dominant;
+  const lucky = L.elements[fortune.wuxing.luckyElement] ?? fortune.wuxing.luckyElement;
   const stars = scoreToStars(fortune.fortune.score);
-  const level = LEVEL_NAMES[fortune.fortune.level] ?? fortune.fortune.level;
+  const level = L.levels[fortune.fortune.level] ?? fortune.fortune.level;
   const sColor = scoreColor(fortune.fortune.score, c);
 
   const yi = fortune.fortune.yi.join(' | ');
@@ -69,18 +64,18 @@ export function formatText(fortune: Fortune, opts: TextOptions = {}): string {
     const lines = [
       `${dateStr}`,
       `${ganzhi}`,
-      `五行：${dominant}  幸运元素：${lucky}`,
-      `运势：${stars} (${level}) 评分：${fortune.fortune.score}`,
+      `${L.wuxing}${L.colon}${dominant}  ${L.luckyElement}${L.colon}${lucky}`,
+      `${L.fortune}${L.colon}${stars} (${level}) ${L.score}${L.colon}${fortune.fortune.score}`,
       ``,
       fortune.fortune.overview,
       ``,
-      `宜：${yi}`,
-      `忌：${ji}`,
+      `${L.yi}${L.colon}${yi}`,
+      `${L.ji}${L.colon}${ji}`,
       ``,
-      `幸运编程语言：${fortune.fortune.luckyLang}`,
-      `幸运开发工具：${fortune.fortune.luckyTool}`,
+      `${L.luckyLang}${L.colon}${fortune.fortune.luckyLang}`,
+      `${L.luckyTool}${L.colon}${fortune.fortune.luckyTool}`,
     ];
-    if (fortune.fortune.tip) lines.push(``, `开运提示：${fortune.fortune.tip}`);
+    if (fortune.fortune.tip) lines.push(``, `💡 ${fortune.fortune.tip}`);
     return lines.join('\n');
   }
 
@@ -93,7 +88,7 @@ export function formatText(fortune: Fortune, opts: TextOptions = {}): string {
   lines.push(`${c.dim}│${c.reset} ${c.cyan}${ganzhi}${c.reset}${' '.repeat(Math.max(0, width - ganzhi.length - 1))}${c.dim}│${c.reset}`);
   lines.push(`${c.dim}│${c.reset}${' '.repeat(width)}${c.dim}│${c.reset}`);
 
-  const wuxingLine = `五行：${dominant}  幸运元素：${lucky}`;
+  const wuxingLine = `${L.wuxing}${L.colon}${dominant}  ${L.luckyElement}${L.colon}${lucky}`;
   lines.push(`${c.dim}│${c.reset} ${c.magenta}${wuxingLine}${c.reset}${' '.repeat(Math.max(0, width - wuxingLine.length - 1))}${c.dim}│${c.reset}`);
 
   const starLine = `${stars}  ${level}  (${fortune.fortune.score}/100)`;
@@ -109,7 +104,7 @@ export function formatText(fortune: Fortune, opts: TextOptions = {}): string {
   lines.push(`${c.dim}│${c.reset}${' '.repeat(width)}${c.dim}│${c.reset}`);
 
   // Yi
-  const yiHeader = '宜：';
+  const yiHeader = `${L.yi}${L.colon}`;
   lines.push(`${c.dim}│${c.reset} ${c.green}${yiHeader}${c.reset}${' '.repeat(Math.max(0, width - yiHeader.length - 1))}${c.dim}│${c.reset}`);
   for (const item of fortune.fortune.yi) {
     const itemLine = `  · ${item}`;
@@ -119,7 +114,7 @@ export function formatText(fortune: Fortune, opts: TextOptions = {}): string {
   lines.push(`${c.dim}│${c.reset}${' '.repeat(width)}${c.dim}│${c.reset}`);
 
   // Ji
-  const jiHeader = '忌：';
+  const jiHeader = `${L.ji}${L.colon}`;
   lines.push(`${c.dim}│${c.reset} ${c.red}${jiHeader}${c.reset}${' '.repeat(Math.max(0, width - jiHeader.length - 1))}${c.dim}│${c.reset}`);
   for (const item of fortune.fortune.ji) {
     const itemLine = `  · ${item}`;
@@ -130,8 +125,8 @@ export function formatText(fortune: Fortune, opts: TextOptions = {}): string {
   lines.push(`${c.dim}├${hr}┤${c.reset}`);
 
   // Lucky
-  const langLine = `幸运编程语言：${fortune.fortune.luckyLang}`;
-  const toolLine = `幸运开发工具：${fortune.fortune.luckyTool}`;
+  const langLine = `${L.luckyLang}${L.colon}${fortune.fortune.luckyLang}`;
+  const toolLine = `${L.luckyTool}${L.colon}${fortune.fortune.luckyTool}`;
   lines.push(`${c.dim}│${c.reset} ${c.yellow}${langLine}${c.reset}${' '.repeat(Math.max(0, width - langLine.length - 1))}${c.dim}│${c.reset}`);
   lines.push(`${c.dim}│${c.reset} ${c.yellow}${toolLine}${c.reset}${' '.repeat(Math.max(0, width - toolLine.length - 1))}${c.dim}│${c.reset}`);
 

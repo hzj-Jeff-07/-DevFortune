@@ -2,6 +2,8 @@ import { getDailyFortune, getHourPillar } from '@devfortune/core';
 import { parseArgs } from './commands/parser.js';
 import { formatText } from './output/text.js';
 import { formatMarkdown } from './output/markdown.js';
+import { getLabels, resolveLocale } from './output/labels.js';
+import type { CliLocale } from './output/labels.js';
 import type { Fortune } from '@devfortune/core';
 
 const VERSION = '0.1.0';
@@ -13,6 +15,7 @@ const HELP = `devfortune - 程序员每日运势
 选项：
   -d, --date <date>       指定日期 (YYYY-MM-DD)，默认今天
   -t, --time <HH:mm>      指定时刻，输出附加时柱
+  -l, --lang <zh|en>      输出语言（默认跟随环境变量，回退中文）
   -D, --detail            显示详细五行分析
   -b, --brief             简洁模式（单行输出）
   -f, --format <format>   输出格式: text (默认) | json | markdown
@@ -63,12 +66,14 @@ export function run(argv: string[]): void {
     date.setHours(Number(m[1]), Number(m[2]), 0, 0);
   }
 
+  const locale = resolveLocale(args.lang);
+
   try {
-    const fortune = getDailyFortune(date);
+    const fortune = getDailyFortune(date, { locale });
     if (args.time) {
       fortune.ganzhi.hour = getHourPillar(date).display;
     }
-    const output = render(fortune, args);
+    const output = render(fortune, args, locale);
     process.stdout.write(output + '\n');
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err);
@@ -79,7 +84,8 @@ export function run(argv: string[]): void {
 
 function render(
   fortune: Fortune,
-  args: ReturnType<typeof parseArgs>
+  args: ReturnType<typeof parseArgs>,
+  locale: CliLocale
 ): string {
   const format = args.format ?? 'text';
 
@@ -88,22 +94,24 @@ function render(
   }
 
   if (format === 'markdown') {
-    return formatMarkdown(fortune);
+    return formatMarkdown(fortune, locale);
   }
 
   // text
   if (args.brief) {
-    return formatBrief(fortune);
+    return formatBrief(fortune, locale);
   }
 
   return formatText(fortune, {
     detail: args.detail,
     noColor: args.noColor,
     raw: args.raw,
+    locale,
   });
 }
 
-function formatBrief(fortune: Fortune): string {
+function formatBrief(fortune: Fortune, locale: CliLocale): string {
+  const L = getLabels(locale);
   const score = fortune.fortune.score;
   const stars = score >= 85 ? '★★★★★' :
     score >= 70 ? '★★★★☆' :
@@ -112,5 +120,5 @@ function formatBrief(fortune: Fortune): string {
   const yi = fortune.fortune.yi.slice(0, 2).join(',');
   const ji = fortune.fortune.ji.slice(0, 1).join(',');
   const dateStr = fortune.date;
-  return `${dateStr} ${stars} 宜:${yi} 忌:${ji} | ${fortune.fortune.overview}`;
+  return `${dateStr} ${stars} ${L.yi}:${yi} ${L.ji}:${ji} | ${fortune.fortune.overview}`;
 }

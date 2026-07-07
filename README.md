@@ -58,6 +58,9 @@ devfortune -d 2026-07-07 -t 14:30
 devfortune --brief
 devfortune -f json
 
+# English output
+devfortune --lang en
+
 # 输出示例：
 # ╭──────────────────────────────────────╮
 # │  📅 2026年4月9日 丙午年 壬辰月 甲子日  │
@@ -111,7 +114,7 @@ code --install-extension devfortune.devfortune
 - 🐚 Shell 集成（打开终端自动显示运势，见下方配置）
 - 🕐 时柱推算（`--time` 指定时刻，五鼠遁法）
 - 📤 JSON / Markdown 输出模式（便于管道和脚本集成）
-- 🌍 多语言支持（规划中，中文/English）
+- 🌍 多语言支持（`--lang zh|en`，自动跟随系统语言）
 
 ### VS Code 扩展
 
