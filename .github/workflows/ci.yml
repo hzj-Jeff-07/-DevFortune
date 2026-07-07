@@ -7,7 +7,8 @@ on:
     branches: [main]
 
 jobs:
-  build-and-test:
+  # core / CLI / VS Code 扩展在支持的 Node 版本矩阵上构建 + 测试
+  test:
     runs-on: ubuntu-latest
 
     strategy:
@@ -24,13 +25,39 @@ jobs:
           node-version: ${{ matrix.node-version }}
           cache: pnpm
 
+      - uses: actions/cache@v4
+        with:
+          path: .turbo/cache
+          key: turbo-test-node${{ matrix.node-version }}-${{ github.sha }}
+          restore-keys: turbo-test-node${{ matrix.node-version }}-
+
       - run: pnpm install --frozen-lockfile
 
-      - run: pnpm build
+      - run: pnpm turbo run build test typecheck --filter='!@devfortune/web'
 
-      - run: pnpm test
+  # Web 应用只在部署所用的 Node 版本上构建一次
+  build-web:
+    runs-on: ubuntu-latest
 
-      - run: pnpm typecheck
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - uses: actions/cache@v4
+        with:
+          path: .turbo/cache
+          key: turbo-web-${{ github.sha }}
+          restore-keys: turbo-web-
+
+      - run: pnpm install --frozen-lockfile
+
+      - run: pnpm turbo run build typecheck --filter=@devfortune/web
 
   lint:
     runs-on: ubuntu-latest

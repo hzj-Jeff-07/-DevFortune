@@ -6,6 +6,7 @@ import {
   getNayin,
   getJiaZiIndex,
 } from './data.js';
+import { getJieDay, getLiChunDay } from './jieqi.js';
 
 const MIN_DATE = new Date(1900, 0, 1);
 const MAX_DATE = new Date(2100, 11, 31);
@@ -14,12 +15,9 @@ const MAX_DATE = new Date(2100, 11, 31);
 const BASE_DATE = new Date(2000, 0, 7);
 const MS_PER_DAY = 24 * 60 * 60 * 1000;
 
-// 立春日期近似表（1900-2100年的2月3-5日）
-// 简化方案：使用近似值，绝大多数年份立春在2月4日
+/** 立春日期（天文精确计算，按东八区取日） */
 function getLiChunDate(year: number): Date {
-  // 立春一般在2月3日-5日之间
-  // 使用简化近似：大多数年份为2月4日
-  return new Date(year, 1, 4);
+  return new Date(year, 1, getLiChunDay(year));
 }
 
 function validateDate(date: Date): void {
@@ -81,13 +79,11 @@ function getMonthTianGanBase(yearTianGanIndex: number): number {
 /** 计算月柱 */
 export function getMonthPillar(date: Date, yearPillar: GanZhiPillar): GanZhiPillar {
   // 月支：正月=寅(2)，二月=卯(3)，...，十二月=丑(1)
-  // 节气分界近似：每月约5日为节气分界
   const month = date.getMonth(); // 0-11 (Jan=0)
   const day = date.getDate();
 
-  // 近似节气分界日（每月的节气日期）
-  const jieQiDays = [6, 4, 6, 5, 6, 6, 7, 8, 8, 8, 7, 7];
-  const jieDay = jieQiDays[month];
+  // 月柱分界节气日（天文精确计算，按东八区取日）
+  const jieDay = getJieDay(date.getFullYear(), month + 1);
 
   // 当月节气前属于上一个月柱
   let monthIndex: number;
